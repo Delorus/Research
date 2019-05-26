@@ -89,6 +89,33 @@ public class IteratorTest {
         assertArrayEquals(expected, toArray(iterator));
     }
 
+    @Test
+    public void dfsInOrderIterateBySimpleTree() {
+        // @formatter:off
+        var tree = new ManualTree(1)
+            .left(2)
+                .left(4).toParent()
+                .right(5)
+                    .left(7)
+                        .left(10).toParent()
+                    .toParent()
+                    .right(8)
+                    .toParent()
+                .toParent()
+            .toParent()
+            .right(3)
+                .right(6)
+                    .left(9).toParent()
+                .toParent()
+            .toParent();
+        // @formatter:on
+        var expected = new Integer[]{4, 2, 10, 7, 5, 8, 1, 3, 9, 6};
+
+        var iterator = new DFSInOrderIterator<>(tree);
+
+        assertArrayEquals(expected, toArray(iterator));
+    }
+
     private Integer[] toArray(Iterator<Integer> iterator) {
         List<Integer> result = new ArrayList<>();
         iterator.forEachRemaining(result::add);
