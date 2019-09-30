@@ -39,7 +39,7 @@ public class IteratorTest {
             return child;
         }
 
-        public ManualTree toParent() {
+        public ManualTree back() {
             return parent;
         }
 
@@ -62,6 +62,18 @@ public class IteratorTest {
         public BinaryTree<Integer> rightChild() {
             return rightChild;
         }
+
+        @Override
+        public String toString() {
+            return "{v=" + value + "; l=" + opt(leftChild) + "; r=" + opt(rightChild) + '}';
+        }
+
+        private static String opt(ManualTree tree) {
+            if (tree == null) {
+                return "<empty>";
+            }
+            return String.valueOf(tree.value);
+        }
     }
 
     @Test
@@ -69,18 +81,18 @@ public class IteratorTest {
         // @formatter:off
         var tree = new ManualTree(1)
                 .left(2)
-                    .left(4).toParent()
+                    .left(4).back()
                     .right(5)
-                        .left(7).toParent()
+                        .left(7).back()
                         .right(8)
-                        .toParent()
-                    .toParent()
-                .toParent()
+                        .back()
+                    .back()
+                .back()
                 .right(3)
                     .right(6)
-                        .left(9).toParent()
-                    .toParent()
-                .toParent();
+                        .left(9).back()
+                    .back()
+                .back();
         // @formatter:on
         var expected = new Integer[]{1, 2, 4, 5, 7, 8, 3, 6, 9};
 
@@ -94,24 +106,72 @@ public class IteratorTest {
         // @formatter:off
         var tree = new ManualTree(1)
             .left(2)
-                .left(4).toParent()
+                .left(4).back()
                 .right(5)
                     .left(7)
-                        .left(10).toParent()
-                    .toParent()
+                        .left(10).back()
+                    .back()
                     .right(8)
-                    .toParent()
-                .toParent()
-            .toParent()
+                    .back()
+                .back()
+            .back()
             .right(3)
                 .right(6)
-                    .left(9).toParent()
-                .toParent()
-            .toParent();
+                    .left(9).back()
+                .back()
+            .back();
         // @formatter:on
         var expected = new Integer[]{4, 2, 10, 7, 5, 8, 1, 3, 9, 6};
 
         var iterator = new DFSInOrderIterator<>(tree);
+
+        assertArrayEquals(expected, toArray(iterator));
+    }
+
+    @Test
+    public void dfsPostOrderIterateBySimpleTree() {
+        // @formatter:off
+        var tree = new ManualTree(1)
+            .left(2)
+                .left(4).back()
+                .right(5)
+                    .left(7)
+                        .left(10).back()
+                    .back()
+                    .right(8)
+                    .back()
+                .back()
+            .back()
+            .right(3)
+                .right(6)
+                    .left(9).back()
+                .back()
+            .back();
+        // @formatter:on
+        var expected = new Integer[]{4, 10, 7, 8, 5, 2, 9, 6, 3, 1};
+
+        var iterator = new DFSPostOrderIterator<>(tree);
+
+        assertArrayEquals(expected, toArray(iterator));
+    }
+
+    @Test
+    public void dfsPostOrderIterateBySimpleTree2() {
+        // @formatter:off
+        var tree = new ManualTree(1)
+            .left(2)
+                .left(4).back()
+                .right(5)
+                    .left(7)
+                        .left(10).back().back()
+                    .right(8).back().back().back()
+            .right(3)
+                .right(6)
+                    .left(9).back().back().back();
+        // @formatter:on
+        var expected = new Integer[]{4, 10, 7, 8, 5, 2, 9, 6, 3, 1};
+
+        var iterator = new DFSPostOrderIterator2<>(tree);
 
         assertArrayEquals(expected, toArray(iterator));
     }
